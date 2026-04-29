@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="utf-8" />
+    <title>Mappa dell'ascolto - Monselice</title>
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+
+    <style>
+        body { margin:0; }
+        #map { height: 100vh; }
+    </style>
+</head>
+<body>
+
+<div id="map"></div>
+
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+
+// 1. Inizializza mappa
+var map = L.map('map').setView([45.239, 11.750], 13);
+
+// 2. Base map (OpenStreetMap)
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap'
+}).addTo(map);
+
+// 3. DATI (GeoJSON)
+// Qui inserirai i risultati delle serate
+var ascoltoData = {
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [11.749, 45.239]
+            },
+            "properties": {
+                "quartiere": "Centro",
+                "criticita": "Traffico eccessivo, pochi spazi verdi",
+                "proposte": "Zona 30, riqualificazione piazze"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [11.755, 45.235]
+            },
+            "properties": {
+                "quartiere": "San Bortolo",
+                "criticita": "Scarsa illuminazione",
+                "proposte": "Nuovi lampioni e sicurezza"
+            }
+        }
+    ]
+};
+
+// 4. Aggiunta dati alla mappa
+L.geoJSON(ascoltoData, {
+    onEachFeature: function (feature, layer) {
+        layer.bindPopup(
+            "<b>Quartiere:</b> " + feature.properties.quartiere + "<br>" +
+            "<b>Criticità:</b> " + feature.properties.criticita + "<br>" +
+            "<b>Proposte:</b> " + feature.properties.proposte
+        );
+    }
+}).addTo(map);
+
+</script>
+
+</body>
+</html>
