@@ -1,36 +1,114 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-    <meta charset="utf-8" />
-    <title>Mappa dell'ascolto - Monselice</title>
+<meta charset="utf-8" />
+<title>Mappa dell'ascolto - Monselice</title>
 
-    <!-- Leaflet CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<!-- Leaflet -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 
-    <style>
-        body { margin:0; }
-        #map { height: 100vh; }
-    </style>
+<!-- Font Awesome (icone) -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+
+<style>
+body {
+    margin:0;
+    font-family: Arial, sans-serif;
+}
+
+/* Header */
+#header {
+    padding: 15px 20px;
+    background: #111;
+    color: white;
+}
+
+#header h1 {
+    margin: 0;
+    font-size: 20px;
+}
+
+#header p {
+    margin: 5px 0 0;
+    font-size: 14px;
+    opacity: 0.8;
+}
+
+/* Mappa */
+#map {
+    height: calc(100vh - 80px);
+}
+
+/* Popup styling */
+.popup-card {
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.popup-card h3 {
+    margin: 0 0 5px;
+    font-size: 16px;
+}
+
+.popup-section {
+    margin-top: 6px;
+}
+
+.label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 2px;
+}
+</style>
 </head>
+
 <body>
+
+<div id="header">
+    <h1>🗺️ Mappa dell’ascolto – Monselice</h1>
+    <p>Una raccolta delle voci emerse durante gli incontri nei quartieri: criticità, idee e proposte dal territorio.</p>
+</div>
 
 <div id="map"></div>
 
-<!-- Leaflet JS -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <script>
 
-// 1. Inizializza mappa
+// MAPPA
 var map = L.map('map').setView([45.239, 11.750], 13);
 
-// 2. Base map (OpenStreetMap)
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '© OpenStreetMap'
+// BASEMAP TONER (più elegante)
+L.tileLayer('https://tiles.stadiamaps.com/tiles/stamen_toner_lite/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; OpenStreetMap & Stadia Maps'
 }).addTo(map);
 
-// 3. DATI (GeoJSON)
-// Qui inserirai i risultati delle serate
+
+// ICONA PERSONALIZZATA
+function getIcon(tipo) {
+    let iconClass = "fa-comment";
+    let color = "black";
+
+    if (tipo === "ambiente") {
+        iconClass = "fa-leaf";
+        color = "green";
+    } else if (tipo === "sicurezza") {
+        iconClass = "fa-triangle-exclamation";
+        color = "red";
+    } else if (tipo === "mobilita") {
+        iconClass = "fa-road";
+        color = "blue";
+    }
+
+    return L.divIcon({
+        html: `<i class="fa-solid ${iconClass}" style="color:${color}; font-size:18px;"></i>`,
+        className: '',
+        iconSize: [20, 20]
+    });
+}
+
+
+// DATI
 var ascoltoData = {
     "type": "FeatureCollection",
     "features": [
@@ -42,8 +120,10 @@ var ascoltoData = {
             },
             "properties": {
                 "quartiere": "Centro",
-                "criticita": "Traffico eccessivo, pochi spazi verdi",
-                "proposte": "Zona 30, riqualificazione piazze"
+                "tipo": "mobilita",
+                "criticita": "Traffico intenso e attraversamenti pericolosi",
+                "proposte": "Zona 30 e piste ciclabili",
+                "data": "Aprile 2026"
             }
         },
         {
@@ -54,22 +134,53 @@ var ascoltoData = {
             },
             "properties": {
                 "quartiere": "San Bortolo",
-                "criticita": "Scarsa illuminazione",
-                "proposte": "Nuovi lampioni e sicurezza"
+                "tipo": "sicurezza",
+                "criticita": "Scarsa illuminazione notturna",
+                "proposte": "Installazione nuovi lampioni",
+                "data": "Aprile 2026"
             }
         }
     ]
 };
 
-// 4. Aggiunta dati alla mappa
+
+// AGGIUNTA ALLA MAPPA
 L.geoJSON(ascoltoData, {
+
+    pointToLayer: function(feature, latlng) {
+        return L.marker(latlng, {
+            icon: getIcon(feature.properties.tipo)
+        });
+    },
+
     onEachFeature: function (feature, layer) {
-        layer.bindPopup(
-            "<b>Quartiere:</b> " + feature.properties.quartiere + "<br>" +
-            "<b>Criticità:</b> " + feature.properties.criticita + "<br>" +
-            "<b>Proposte:</b> " + feature.properties.proposte
-        );
+
+        var p = feature.properties;
+
+        var popupContent = `
+            <div class="popup-card">
+                <h3>${p.quartiere}</h3>
+
+                <div class="popup-section">
+                    <span class="label">📅 Incontro</span>
+                    ${p.data}
+                </div>
+
+                <div class="popup-section">
+                    <span class="label">⚠️ Criticità</span>
+                    ${p.criticita}
+                </div>
+
+                <div class="popup-section">
+                    <span class="label">💡 Proposte</span>
+                    ${p.proposte}
+                </div>
+            </div>
+        `;
+
+        layer.bindPopup(popupContent);
     }
+
 }).addTo(map);
 
 </script>
