@@ -67,7 +67,7 @@ body {
 <div id="header">
     <h1>🗺️ Mappa dell’ascolto – Monselice</h1>
     <p>Una raccolta delle voci emerse durante gli incontri nei quartieri: criticità, idee e proposte dal territorio.</p>
-    <p>Clicca sul punto per scoprire le criticità emerse durante gli incontri.</p>
+    <p>Scopri dove si terranno gli incontri e cosa è emerso nei quartieri.</p>
 </div>
 
 <div id="map"></div>
@@ -86,103 +86,211 @@ L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
 
 
 // ICONA PERSONALIZZATA
-function getIcon(tipo) {
-    let iconClass = "fa-comment";
-    let color = "black";
+function getIcon(feature) {
 
-    if (tipo === "ambiente") {
-        iconClass = "fa-leaf";
-        color = "green";
-    } else if (tipo === "sicurezza") {
-        iconClass = "fa-triangle-exclamation";
-        color = "red";
-    } else if (tipo === "mobilita") {
-        iconClass = "fa-road";
-        color = "blue";
-    }
-
+if (feature.properties.categoria === "evento") {
     return L.divIcon({
-        html: `<i class="fa-solid ${iconClass}" style="color:${color}; font-size:18px;"></i>`,
+        html: `<i class="fa-solid fa-calendar-days" style="color:purple; font-size:20px; text-shadow:0 0 3px white;"></i>`,
         className: '',
         iconSize: [20, 20]
     });
 }
 
+if (feature.properties.categoria === "tappa") {
+    return L.divIcon({
+        html: `<i class="fa-solid fa-location-dot" style="color:green; font-size:20px; text-shadow:0 0 3px white;"></i>`,
+        className: '',
+        iconSize: [20, 20]
+    });
+}
+
+// fallback (importantissimo)
+return L.divIcon({
+    html: `<i class="fa-solid fa-circle" style="color:gray;"></i>`,
+    className: '',
+    iconSize: [10, 10]
+});
+}
+
 
 // DATI
 var ascoltoData = {
-    "type": "FeatureCollection",
-    "features": [
-        {
-            "type": "Feature",
-            "geometry": {
-                "type": "Point",
-                "coordinates": [11.749, 45.239]
-            },
-            "properties": {
-                "quartiere": "Centro",
-                "tipo": "mobilita",
-                "criticita": "Traffico intenso e attraversamenti pericolosi",
-                "proposte": "Zona 30 e piste ciclabili",
-                "data": "Aprile 2026"
-            }
-        },
-        {
-            "type": "Feature",
-            "geometry": {
-                "type": "Point",
-                "coordinates": [11.755, 45.235]
-            },
-            "properties": {
-                "quartiere": "San Bortolo",
-                "tipo": "sicurezza",
-                "criticita": "Scarsa illuminazione notturna",
-                "proposte": "Installazione nuovi lampioni",
-                "data": "Aprile 2026"
-            }
-        }
-    ]
+"type": "FeatureCollection",
+"features": [
+
+/* TAPPE */
+{
+"type": "Feature",
+"geometry": {"type": "Point","coordinates": [11.725367967799004,45.228552192204916]},
+"properties": {"categoria":"tappa","luogo":"Marendole","giorno":"giovedì","data":"07/05/2026","orario":"18:30-19:30"}
+},
+{
+"type": "Feature",
+"geometry": {"type": "Point","coordinates": [11.759293182647058,45.27585777787184]},
+"properties": {"categoria":"tappa","luogo":"Monticelli","giorno":"venerdì","data":"08/05/2026","orario":"18:30-19:30"}
+},
+{
+"type": "Feature",
+"geometry": {"type": "Point","coordinates": [11.764948439459552,45.23254863235562]},
+"properties": {"categoria":"tappa","luogo":"Marco Polo","giorno":"sabato","data":"09/05/2026","orario":"17:00-18:00"}
+},
+{
+"type": "Feature",
+"geometry": {"type": "Point","coordinates": [11.767605818338213,45.23941390371802]},
+"properties": {"categoria":"tappa","luogo":"Costa Calcinara","giorno":"sabato","data":"09/05/2026","orario":"18:30-19:30"}
+},
+{
+"type": "Feature",
+"geometry": {"type": "Point","coordinates": [11.792563704593565,45.22295730165901]},
+"properties": {"categoria":"tappa","luogo":"San Cosma","giorno":"martedì","data":"12/05/2026","orario":"18:30-19:30"}
+},
+{
+"type": "Feature",
+"geometry": {"type": "Point","coordinates": [11.759631001078171,45.214447102534955]},
+"properties": {"categoria":"tappa","luogo":"San Bortolo","giorno":"mercoledì","data":"13/05/2026","orario":"18:30-19:30"}
+},
+{
+"type": "Feature",
+"geometry": {"type": "Point","coordinates": [11.737175890108945,45.24571441735491]},
+"properties": {"categoria":"tappa","luogo":"Carmine","giorno":"giovedì","data":"14/05/2026","orario":"18:30-19:30"}
+},
+{
+"type": "Feature",
+"geometry": {"type": "Point","coordinates": [11.73964791230657,45.22255427128618]},
+"properties": {"categoria":"tappa","luogo":"Cà Oddo","giorno":"martedì","data":"19/05/2026","orario":"18:30-19:30"}
+},
+{
+"type": "Feature",
+"geometry": {"type": "Point","coordinates": [11.7438138197217,45.23248594638484]},
+"properties": {"categoria":"tappa","luogo":"San Giacomo","giorno":"giovedì","data":"21/05/2026","orario":"18:30-19:30"}
+},
+
+/* EVENTI */
+{
+"type": "Feature",
+"geometry": {"type": "Point","coordinates": [11.733786547022948,45.214656898521355]},
+"properties": {"categoria":"evento","luogo":"Ca Oddo","giorno":"martedì","data":"05/05/2026","ospite":"Bellanova"}
+},
+{
+"type": "Feature",
+"geometry": {"type": "Point","coordinates": [11.792525054146086,45.22298291714669]},
+"properties": {"categoria":"evento","luogo":"San Cosma","giorno":"mercoledì","data":"06/05/2026","ospite":""}
+},
+{
+"type": "Feature",
+"geometry": {"type": "Point","coordinates": [11.745650640735333,45.23409835474224]},
+"properties": {"categoria":"evento","luogo":"San Giacomo","giorno":"giovedì","data":"07/05/2026","ospite":"Micalizzi"}
+},
+{
+"type": "Feature",
+"geometry": {"type": "Point","coordinates": [11.759631001078171,45.214447102534955]},
+"properties": {"categoria":"evento","luogo":"San Bortolo","giorno":"venerdì","data":"08/05/2026","ospite":"Corso"}
+},
+{
+"type": "Feature",
+"geometry": {"type": "Point","coordinates": [11.767775158386684,45.2380678378008]},
+"properties": {"categoria":"evento","luogo":"Maro Polo","giorno":"martedì","data":"12/05/2026","ospite":"Guarda"}
+},
+{
+"type": "Feature",
+"geometry": {"type": "Point","coordinates": [11.767609223082571,45.23810314882326]},
+"properties": {"categoria":"evento","luogo":"Redentore","giorno":"giovedì","data":"14/05/2026","ospite":"Andrea Crisanti"}
+},
+{
+"type": "Feature",
+"geometry": {"type": "Point","coordinates": [11.725367967799004,45.228552192204916]},
+"properties": {"categoria":"evento","luogo":"Marendole","giorno":"lunedì","data":"18/05/2026","ospite":""}
+},
+{
+"type": "Feature",
+"geometry": {"type": "Point","coordinates": [11.759651492850505,45.272123860711574]},
+"properties": {"categoria":"evento","luogo":"Monticelli","giorno":"martedì","data":"19/05/2026","ospite":"Carlo Cunegato"}
+},
+{
+"type": "Feature",
+"geometry": {"type": "Point","coordinates": [11.736665312131107,45.24575445620358]},
+"properties": {"categoria":"evento","luogo":"Carmine","giorno":"mercoledì","data":"20/05/2026","ospite":"Elena Ostanel"}
+},
+{
+"type": "Feature",
+"geometry": {"type": "Point","coordinates": [11.750958663527085,45.24175320831662]},
+"properties": {"categoria":"evento","luogo":"Piazza","giorno":"venerdì","data":"22/05/2026","ospite":"Zan"}
+}
+
+]
 };
 
-
 // AGGIUNTA ALLA MAPPA
-L.geoJSON(ascoltoData, {
+var layer = L.geoJSON(ascoltoData, {
 
-    pointToLayer: function(feature, latlng) {
-        return L.marker(latlng, {
-            icon: getIcon(feature.properties.tipo)
-        });
-    },
+pointToLayer: function(feature, latlng) {
+    return L.marker(latlng, {
+        icon: getIcon(feature)
+    });
+},
 
-    onEachFeature: function (feature, layer) {
+onEachFeature: function (feature, layer) {
 
-        var p = feature.properties;
+    var p = feature.properties;
+    var popupContent = "";
 
-        var popupContent = `
-            <div class="popup-card">
-                <h3>${p.quartiere}</h3>
+    // EVENTI
+    if (p.categoria === "evento") {
 
-                <div class="popup-section">
-                    <span class="label">📅 Incontro</span>
-                    ${p.data}
-                </div>
+        popupContent = `
+        <div class="popup-card">
+            <h3>📅 ${p.luogo}</h3>
 
-                <div class="popup-section">
-                    <span class="label">⚠️ Criticità</span>
-                    ${p.criticita}
-                </div>
-
-                <div class="popup-section">
-                    <span class="label">💡 Proposte</span>
-                    ${p.proposte}
-                </div>
+            <div class="popup-section">
+                <span class="label">🗓️ Data</span>
+                ${p.giorno} ${p.data}
             </div>
-        `;
 
-        layer.bindPopup(popupContent);
+            ${p.ospite ? `
+            <div class="popup-section">
+                <span class="label">👤 Ospite</span>
+                ${p.ospite}
+            </div>
+            ` : ""}
+
+            <div class="popup-section">
+                Vieni a partecipare alla serata pubblica.
+            </div>
+        </div>
+        `;
     }
 
+    // TAPPE
+    if (p.categoria === "tappa") {
+
+        popupContent = `
+        <div class="popup-card">
+            <h3>📍 ${p.luogo}</h3>
+
+            <div class="popup-section">
+                <span class="label">🗓️ Data</span>
+                ${p.giorno} ${p.data}
+            </div>
+
+            <div class="popup-section">
+                <span class="label">⏰ Orario</span>
+                ${p.orario}
+            </div>
+
+            <div class="popup-section">
+                Passeremo da qui per raccogliere idee e segnalazioni.
+            </div>
+        </div>
+        `;
+    }
+
+    layer.bindPopup(popupContent);
+}
+
 }).addTo(map);
+
+// ✅ zoom automatico (QUI, fuori)
+map.fitBounds(layer.getBounds());
 
 </script>
 
